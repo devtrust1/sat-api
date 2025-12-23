@@ -1,15 +1,19 @@
 {
   "version": 2,
   "functions": {
-    "api/server.ts": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    },
+    "api/**/*.ts": {
       "runtime": "nodejs18.x",
       "maxDuration": 30
     }
   },
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "api/server.ts"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ]
 }
