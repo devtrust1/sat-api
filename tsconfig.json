@@ -1,30 +1,50 @@
 {
   "compilerOptions": {
+    /* Language and module targets */
     "target": "ES2022",
     "module": "commonjs",
     "lib": ["ES2022"],
+    "moduleResolution": "node",
+
+    /* Output */
     "outDir": "./dist",
     "rootDir": "./src",
+
+    /* Strictness (balanced for large API) */
     "strict": true,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Interop & convenience */
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    /* Build performance & compatibility */
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "node",
+
+    /* Declarations & source maps (useful for debugging and Prisma) */
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
 
-    // ❌ Removed "jest" so Vercel build no longer requires Jest types
+    /* Types */
     "types": ["node"],
-
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*", "config/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+
+  "include": [
+    "src/**/*",
+    "config/**/*"
+  ],
+
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }
