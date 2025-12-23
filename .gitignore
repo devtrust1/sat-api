@@ -1,0 +1,118 @@
+# ===========================================
+# SAT Backend - Git Ignore
+# ===========================================
+
+# -----------------
+# Environment Variables
+# -----------------
+.env
+.env.local
+.env.production
+.env.*.local
+# Keep .env.example for reference
+!.env.example
+
+# -----------------
+# Dependencies
+# -----------------
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# -----------------
+# Build Output
+# -----------------
+dist/
+build/
+*.tsbuildinfo
+
+# -----------------
+# Logs
+# -----------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# -----------------
+# OS Files
+# -----------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# -----------------
+# IDE / Editor
+# -----------------
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+.settings/
+*.launch
+
+# -----------------
+# Testing
+# -----------------
+coverage/
+.nyc_output/
+*.lcov
+
+# -----------------
+# Prisma
+# -----------------
+# Keep prisma directory but ignore generated files
+prisma/migrations/**/migration.sql
+# generated/ folder (if you use custom output)
+
+# -----------------
+# Temporary Files
+# -----------------
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# -----------------
+# Clerk
+# -----------------
+.clerk/
+
+# -----------------
+# Database
+# -----------------
+*.db
+*.sqlite
+*.sqlite3
+
+# -----------------
+# Docker
+# -----------------
+docker-compose.override.yml
+
+# -----------------
+# Scripts (generated)
+# -----------------
+cleanup.sh
+fix-*.sh
+generate-*.sh
+
+# -----------------
+# Misc
+# -----------------
+.cache/
+.parcel-cache/
+.next/
+.vercel/
+.turbo/

@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  email         String         @unique
+  firstName     String?
+  lastName      String?
+  role          UserRole       @default(STUDENT)
+  preferredLang String         @default("en")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  bookmarks     Bookmark[]
+  memories      Memory[]
+  sessions      Session[]
+  whiteboards   Whiteboard[]
+  userSettings  UserSettings?
+  progress      Progress[]
+  activities    UserActivity[]
+
+  @@map("users")
+}
+
+model Session {
+  id                String  @id @default(cuid())
+  userId            String
+  data              Json?
+  lastPoint         String?
+  subject           String?
+  topic             String?
+  duration          Int     @default(0)
+  completed         Boolean @default(false)
+  questionsAnswered Int     @default(0)
+  correctAnswers    Int     @default(0)
+
+  // Enhanced Session Tracking
+  audioModeEnabled      Boolean @default(false)
+  textModeEnabled       Boolean @default(true)
+  photoUploadsCount     Int     @default(0)
+  whiteboardSubmissions Int     @default(0)
+  aiInteractions        Int     @default(0)
+  spreadingJoyActions   Int     @default(0)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookmarks Bookmark[]
+
+  @@map("sessions")
+}
+
+model Whiteboard {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   Json
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("whiteboards")
+}
+
+model Memory {
+  id        String     @id @default(cuid())
+  userId    String
+  type      MemoryType
+  title     String
+  content   Json
+  metadata  Json?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("memories")
+}
+
+model Bookmark {
+  id         String   @id @default(cuid())
+  userId     String
+  type       String
+  resourceId String
+  sessionId  String
+  title      String
+  createdAt  DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId, sessionId])
+  @@map("bookmarks")
+}
+
+model AdminSettings {
+  id             String @id @default(cuid())
+  // AI Settings
+  toneSelectors  Json // {friendly, academic, neutral, motivational}
+  subjects       Json // {math, science, history, languages}
+  aiSystemPrompt Json // Array of strings
+
+  // Language Settings
+  languages Json // {english, spanish, hindi, chinese}
+
+  // Speech Recognition (ASR) Settings
+  speechEngine String @default("whisper") // whisper, google, azure, deepgram, assembly, vosk
+
+  // Text-to-Speech (TTS) Settings
+  voiceEngine String @default("azure") // azure, elevenlabs, playht, polly, coqui
+
+  // Privacy Settings
+  dataRetention     Boolean @default(true)
+  retentionDuration String  @default("30") // "7", "30", "90", "never"
+  safetyMode        Boolean @default(true)
+
+  // Metadata
+  updatedBy String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("admin_settings")
+}
+
+model UserSettings {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Display Settings
+  language    String @default("en")
+  voiceType   String @default("male")
+  speechSpeed String @default("1.0x")
+
+  // Display Settings
+  theme       String @default("light") // "light", "dark", "auto"
+  fontSize    String @default("medium") // "small", "medium", "large"
+  accentColor String @default("cyan")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model Progress {
+  id     String @id @default(cuid())
+  userId String
+
+  // Progress Metrics
+  subject   String
+  topic     String?
+  score     Float   @default(0) // 0-100
+  accuracy  Float   @default(0) // 0-100 percentage
+  timeSpent Int     @default(0) // In seconds
+
+  // Progress Details
+  questionsAttempted Int    @default(0)
+  questionsCorrect   Int    @default(0)
+  questionsWrong     Int    @default(0)
+  level              String @default("beginner") // "beginner", "intermediate", "advanced"
+
+  // Metadata
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("progress")
+}
+
+model UserActivity {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date // Daily date for tracking
+
+  // Daily Metrics
+  studyMinutes      Int @default(0) // Total study time for the day
+  questionsAnswered Int @default(0) // Total questions answered
+  photoQuestions    Int @default(0) // "Say Cheese" - photo-based questions
+  positiveActions   Int @default(0) // "Spreading Joy" - positive interactions
+  aiInteractions    Int @default(0) // AI help requests
+
+  // Streak & Progress
+  streakDay    Int   @default(0) // Day number in current streak
+  starProgress Float @default(0) // Star progress (0-100) based on daily goals
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date]) // One activity record per user per day
+  @@map("user_activities")
+}
+
+enum UserRole {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+enum MemoryType {
+  PROGRESS
+  PREFERENCE
+  BOOKMARK
+  SESSION
+}
